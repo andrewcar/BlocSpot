@@ -14,6 +14,10 @@
 		49D9A2C31B65E5D7003E6036 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 49D9A2C21B65E5D7003E6036 /* Images.xcassets */; };
 		49D9A2C61B65E5D7003E6036 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 49D9A2C41B65E5D7003E6036 /* LaunchScreen.xib */; };
 		49D9A2D21B65E5D7003E6036 /* BlocSpotTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 49D9A2D11B65E5D7003E6036 /* BlocSpotTests.m */; };
+		49D9A2DD1B65E8DA003E6036 /* Search.m in Sources */ = {isa = PBXBuildFile; fileRef = 49D9A2DC1B65E8DA003E6036 /* Search.m */; };
+		49D9A2E01B65E902003E6036 /* POI.m in Sources */ = {isa = PBXBuildFile; fileRef = 49D9A2DF1B65E902003E6036 /* POI.m */; };
+		49D9A2E31B65E918003E6036 /* DataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 49D9A2E21B65E918003E6036 /* DataSource.m */; };
+		49D9A2E51B65F215003E6036 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49D9A2E41B65F215003E6036 /* MapKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +44,13 @@
 		49D9A2CB1B65E5D7003E6036 /* BlocSpotTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BlocSpotTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		49D9A2D01B65E5D7003E6036 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		49D9A2D11B65E5D7003E6036 /* BlocSpotTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BlocSpotTests.m; sourceTree = "<group>"; };
+		49D9A2DB1B65E8DA003E6036 /* Search.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Search.h; sourceTree = "<group>"; };
+		49D9A2DC1B65E8DA003E6036 /* Search.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Search.m; sourceTree = "<group>"; };
+		49D9A2DE1B65E902003E6036 /* POI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = POI.h; sourceTree = "<group>"; };
+		49D9A2DF1B65E902003E6036 /* POI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = POI.m; sourceTree = "<group>"; };
+		49D9A2E11B65E918003E6036 /* DataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataSource.h; sourceTree = "<group>"; };
+		49D9A2E21B65E918003E6036 /* DataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataSource.m; sourceTree = "<group>"; };
+		49D9A2E41B65F215003E6036 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49D9A2E51B65F215003E6036 /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -63,6 +75,7 @@
 		49D9A2A91B65E5D7003E6036 = {
 			isa = PBXGroup;
 			children = (
+				49D9A2E41B65F215003E6036 /* MapKit.framework */,
 				49D9A2B41B65E5D7003E6036 /* BlocSpot */,
 				49D9A2CE1B65E5D7003E6036 /* BlocSpotTests */,
 				49D9A2B31B65E5D7003E6036 /* Products */,
@@ -86,6 +99,12 @@
 				49D9A2BC1B65E5D7003E6036 /* ViewController.h */,
 				49D9A2BD1B65E5D7003E6036 /* ViewController.m */,
 				49D9A2BF1B65E5D7003E6036 /* Main.storyboard */,
+				49D9A2DB1B65E8DA003E6036 /* Search.h */,
+				49D9A2DC1B65E8DA003E6036 /* Search.m */,
+				49D9A2DE1B65E902003E6036 /* POI.h */,
+				49D9A2DF1B65E902003E6036 /* POI.m */,
+				49D9A2E11B65E918003E6036 /* DataSource.h */,
+				49D9A2E21B65E918003E6036 /* DataSource.m */,
 				49D9A2C21B65E5D7003E6036 /* Images.xcassets */,
 				49D9A2C41B65E5D7003E6036 /* LaunchScreen.xib */,
 				49D9A2B51B65E5D7003E6036 /* Supporting Files */,
@@ -219,7 +238,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49D9A2E01B65E902003E6036 /* POI.m in Sources */,
 				49D9A2BE1B65E5D7003E6036 /* ViewController.m in Sources */,
+				49D9A2E31B65E918003E6036 /* DataSource.m in Sources */,
+				49D9A2DD1B65E8DA003E6036 /* Search.m in Sources */,
 				49D9A2BB1B65E5D7003E6036 /* AppDelegate.m in Sources */,
 				49D9A2B81B65E5D7003E6036 /* main.m in Sources */,
 			);
