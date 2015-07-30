@@ -8,6 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+typedef void (^NewItemCompletionBlock)(NSError *error);
+
 @interface DataSource : NSObject
+
++ (instancetype)sharedInstance;
 
 @end

@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  SearchTableViewController.h
 //  BlocSpot
 //
 //  Created by Andrew Carvajal on 7/27/15.
@@ -9,8 +9,6 @@
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
 
-@interface ViewController : UIViewController <MKMapViewDelegate>
-
+@interface SearchTableViewController : UITableViewController <UISearchResultsUpdating>
 
 @end
-
