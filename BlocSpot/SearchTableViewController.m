@@ -7,6 +7,7 @@
 //
 
 #import "SearchTableViewController.h"
+#import "DataSource.h"
 
 @interface SearchTableViewController ()
 
@@ -18,8 +19,9 @@
     [super viewDidLoad];
 
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cell"];
-
-//    [self.tableView reloadData];
+    [[NSNotificationCenter defaultCenter] addObserverForName:@"Placemarks Updated" object:nil queue:nil usingBlock:^(NSNotification *note) {
+        [self.tableView reloadData];
+    }];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -36,39 +38,33 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     // Return the number of rows in the section.
-//    if (_resultSearchController.active) {
-//        return _filteredAppleProducts.count;
-//    } else {
-//        return _appleProducts.count;
-//    }
-    return 1;
+    return [DataSource sharedInstance].placemarks.count;
 }
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell" forIndexPath:indexPath];
-    
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"cell"];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    }
     // Configure the cell...
-//    if (_resultSearchController.active) {
-//        cell.textLabel.text = _filteredAppleProducts[indexPath.row];
-//    } else {
-//        cell.textLabel.text = _appleProducts[indexPath.row];
-//    }
+    cell.textLabel.text = [[DataSource sharedInstance].placemarks[indexPath.row] name];
+//    cell.detailTextLabel.text = [[DataSource sharedInstance].placemarks[indexPath.row] subLocality];
+    cell.detailTextLabel.text = @"hi";
+//    NSLog(@"cell text: %@", cell.textLabel.text);
+    NSLog(@"cell detail text: %@", cell.detailTextLabel.text); // prints null
+//    NSLog(@"placemark.subLocality text: %@", [[DataSource sharedInstance].placemarks[indexPath.row] subLocality]); // prints fine
 
     return cell;
 }
 
-- (void)updateSearchResultsForSearchController:(UISearchController *)searchController {
-//    [_filteredAppleProducts removeAllObjects];
-//    NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"SELF CONTAINS[c] %@", searchController.searchBar.text];
-//    NSArray *array = [_filteredAppleProducts filteredArrayUsingPredicate:searchPredicate];
-//    _filteredAppleProducts = [NSMutableArray arrayWithArray:array];
-//
-//    [self.tableView reloadData];
-}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     // show map annotation according to indexPath
+    [DataSource sharedInstance].tappedPlacemarkOnCell = [DataSource sharedInstance].placemarks[indexPath.row];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"Placemark Tapped" object:nil];
+
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 

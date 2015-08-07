@@ -10,4 +10,13 @@
 
 @implementation POI
 
+- (instancetype)initWithCoord:(CLLocationCoordinate2D)coord title:(NSString *)title subtitle:(NSString *)subtitle {
+    if (self = [super init]) {
+        _coordinate = coord;
+        _title = title;
+        _subtitle = subtitle;
+    }
+    return self;
+}
+
 @end

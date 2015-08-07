@@ -9,6 +9,6 @@
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
 
-@interface SearchTableViewController : UITableViewController <UISearchResultsUpdating>
+@interface SearchTableViewController : UITableViewController
 
 @end

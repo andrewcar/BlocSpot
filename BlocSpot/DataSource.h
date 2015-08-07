@@ -7,10 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <MapKit/MapKit.h>
 
 typedef void (^NewItemCompletionBlock)(NSError *error);
 
 @interface DataSource : NSObject
+
+@property (nonatomic, strong) NSMutableArray *placemarks;
+@property (nonatomic, strong) MKPlacemark *tappedPlacemarkOnCell;
 
 + (instancetype)sharedInstance;
 

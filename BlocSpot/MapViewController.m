@@ -8,19 +8,25 @@
 
 #import "MapViewController.h"
 #import "SearchTableViewController.h"
+#import "DataSource.h"
 
 @interface MapViewController ()
 
 @property (weak, nonatomic) IBOutlet MKMapView *map;
+@property (nonatomic, strong) CLLocationManager *locationManager;
+@property (nonatomic, strong) MKPlacemark *currentLocationPlacemark;
 @property (nonatomic, strong) UISearchController *searchController;
-@property (nonatomic, strong) UIBarButtonItem *searchButton;
+@property (nonatomic, strong) UIBarButtonItem *searchBarButton;
 @property (nonatomic, strong) UIBarButtonItem *categoriesButton;
+@property (nonatomic, strong) UIButton *userLocationButton;
 
 @end
 
 @implementation MapViewController
 
 #define padding 5;
+
+#pragma mark - Initialization
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
@@ -46,28 +52,51 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     _map.delegate = self;
-    _searchController.delegate = self;
-    CLLocationCoordinate2D center = CLLocationCoordinate2DMake(40.773464, -73.970061);
-    MKCoordinateSpan span = MKCoordinateSpanMake(0.01, 0.01);
-    MKCoordinateRegion region = MKCoordinateRegionMake(center, span);
-    [_map setRegion:region animated:YES];
 
-    _searchButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(didPressSearch:)];
+    [[NSNotificationCenter defaultCenter] addObserverForName:@"Placemark Tapped" object:nil queue:nil usingBlock:^(NSNotification *note) {
+        [self showLocationOnMap];
+    }];
+
+    _locationManager = [[CLLocationManager alloc] init];
+    _locationManager.delegate = self;
+    _locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+    _locationManager.distanceFilter = kCLDistanceFilterNone;
+    if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+        [self.locationManager requestWhenInUseAuthorization];
+        [_locationManager startUpdatingLocation];
+    }
+
+    _searchBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(didPressSearchBarButton:)];
     _categoriesButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(didPressCategories:)];
 
-    self.navigationItem.rightBarButtonItems = @[_searchButton, _categoriesButton];
+    _userLocationButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _userLocationButton.backgroundColor = [UIColor colorWithRed:12/255.0 green:204/255.0 blue:67/255.0 alpha:1];
+    [_userLocationButton addTarget:self action:@selector(didPressLocationButton:) forControlEvents:UIControlEventTouchUpInside];
+    [_userLocationButton setTitle:@"Λ" forState:UIControlStateNormal];
+    _userLocationButton.titleLabel.font = [UIFont systemFontOfSize:19];
+    _userLocationButton.titleLabel.textColor = [UIColor whiteColor];
+    _userLocationButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+
+    self.navigationItem.rightBarButtonItems = @[_searchBarButton, _categoriesButton];
+    [self.view addSubview:_userLocationButton];
 }
 
-#pragma mark - Bar Buttons
+- (void)viewWillLayoutSubviews {
+    _userLocationButton.frame = CGRectMake(CGRectGetMinX(self.view.frame) + 20, CGRectGetMaxY(self.view.frame) - 60, 40, 40);
+    _userLocationButton.layer.cornerRadius = _userLocationButton.frame.size.height / 2;
+    _userLocationButton.layer.masksToBounds = YES;
+    _userLocationButton.layer.borderWidth = 0;
+}
 
-// user presses search bar button
-- (void)didPressSearch:(UIBarButtonItem *)sender {
+#pragma mark - Buttons
+
+- (void)didPressSearchBarButton:(UIBarButtonItem *)sender {
     SearchTableViewController *searchTVC = [[SearchTableViewController alloc] init];
-    searchTVC.definesPresentationContext = YES;
+    searchTVC.definesPresentationContext = NO;
 
     _searchController = [[UISearchController alloc] initWithSearchResultsController:searchTVC];
-
-    _searchController.searchResultsUpdater = searchTVC;
+    _searchController.searchBar.delegate = self;
+    _searchController.searchResultsUpdater = self;
     _searchController.hidesNavigationBarDuringPresentation = YES;
     _searchController.dimsBackgroundDuringPresentation = NO;
     [_searchController.searchBar setBarTintColor:[UIColor colorWithRed:12/255.0 green:204/255.0 blue:67/255.0 alpha:1]];
@@ -77,81 +106,115 @@
     [self presentViewController:_searchController animated:YES completion:nil];
 }
 
+- (void)didPressLocationButton:(UIButton *)sender {
+    MKMapRect mapRect = [_map visibleMapRect];
+    MKMapPoint point = MKMapPointForCoordinate(_locationManager.location.coordinate);
+    mapRect.origin.x = point.x - mapRect.size.width * 0.5;
+    mapRect.origin.y = point.y - mapRect.size.height * 0.5;
+    [_map setVisibleMapRect:mapRect animated:YES];
+    _userLocationButton.backgroundColor = [UIColor colorWithRed:10/255.0 green:162/255.0 blue:53/255.0 alpha:1];
+    [UIView animateWithDuration:0.426 animations:^{
+        _userLocationButton.backgroundColor = [UIColor colorWithRed:12/255.0 green:204/255.0 blue:67/255.0 alpha:1];
+    }];
+}
+
 - (void)didPressCategories:(UIBarButtonItem *)sender {
 
 }
 
-#pragma mark - MKMapViewDelegate
+- (void)didTapDetailOnPin {
 
-//- (void)mapView:(MKMapView *)mapView didUpdateUserLocation:(MKUserLocation *)userLocation {
-//    MKCoordinateRegion region;
-//    MKCoordinateSpan span;
-//    span.longitudeDelta = 0.005;
-//    span.latitudeDelta = 0.005;
-//    CLLocationCoordinate2D location;
-//    location.longitude = userLocation.coordinate.longitude;
-//    location.latitude = userLocation.coordinate.latitude;
-//    region.span = span;
-//    region.center = location;
-//    [_map setRegion:region animated:YES];
-//}
+}
 
 #pragma mark - UISearchBarDelegate
 
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-    NSLog(@"search bar text did change");
-}
-
-- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
-    NSLog(@"searchBarTextDidBeginEditing");
-    [searchBar becomeFirstResponder];
-}
-
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
-    NSLog(@"search bar search button clicked");
-    CLGeocoder *geocoder = [[CLGeocoder alloc] init];
-
-    [geocoder geocodeAddressString:searchBar.text completionHandler:^(NSArray *placemarks, NSError *error) {
-        // Mark location and center
-        CLPlacemark *placemark = [placemarks firstObject];
-
-        MKCoordinateRegion region;
-        CLLocationCoordinate2D newLocation = [placemark.location coordinate];
-        region.center = [(CLCircularRegion *)placemark.region center];
-
-        // Drop pin
-        MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
-        [annotation setCoordinate:newLocation];
-        [annotation setTitle:searchBar.text]; // also set the subtitle
-        [_map addAnnotation:annotation];
-
-        // Scroll to search result
-        MKMapRect mapRect = [_map visibleMapRect];
-        MKMapPoint point = MKMapPointForCoordinate([annotation coordinate]);
-        mapRect.origin.x = point.x - mapRect.size.width * 0.5;
-        mapRect.origin.y = point.y - mapRect.size.height * 0.25;
-        [_map setVisibleMapRect:mapRect animated:YES];
+    NSString *searchString = searchBar.text;
+    MKLocalSearchRequest *searchRequest = [[MKLocalSearchRequest alloc] init];
+    searchRequest.naturalLanguageQuery = searchString;
+    searchRequest.region = _map.region;
+    MKLocalSearch *search = [[MKLocalSearch alloc] initWithRequest:searchRequest];
+    [search startWithCompletionHandler:^(MKLocalSearchResponse *response, NSError *error) {
+        NSMutableArray *placemarks = [NSMutableArray array];
+        for (MKMapItem *item in response.mapItems) {
+            [placemarks addObject:item.placemark];
+        }
+        [DataSource sharedInstance].placemarks = placemarks;
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"Placemarks Updated" object:nil];
+        [_map removeAnnotations:[_map annotations]];
+        [_map showAnnotations:placemarks animated:YES];
     }];
-}
-
-- (void)didDismissSearchController:(UISearchController *)searchController {
-    NSLog(@"dismissed search controller");
+    [_searchController dismissViewControllerAnimated:NO completion:nil];
 }
 
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController {
-//    NSString *searchString = _searchBar.text;
-//    MKLocalSearchRequest *searchRequest = [[MKLocalSearchRequest alloc] init];
-//    searchRequest.naturalLanguageQuery = searchString;
-//    searchRequest.region = _map.region;
-//    MKLocalSearch *search = [[MKLocalSearch alloc] initWithRequest:searchRequest];
-//    [search startWithCompletionHandler:^(MKLocalSearchResponse *response, NSError *error) {
-//        NSMutableArray *placemarks = [NSMutableArray new];
-//        for (MKMapItem *item in response.mapItems) {
-//            [placemarks addObject:item.placemark];
-//        }
-//        [_map removeAnnotations:[_map annotations]];
-//        [_map showAnnotations:placemarks animated:YES];
-//    }];
+
+    // create search request for the search bar's text
+    NSString *searchString = _searchController.searchBar.text;
+    MKLocalSearchRequest *searchRequest = [[MKLocalSearchRequest alloc] init];
+    searchRequest.naturalLanguageQuery = searchString;
+
+    // confine search to current region
+    searchRequest.region = _map.region;
+
+    // initialize search request
+    MKLocalSearch *search = [[MKLocalSearch alloc] initWithRequest:searchRequest];
+    [search startWithCompletionHandler:^(MKLocalSearchResponse *response, NSError *error) {
+
+        // create array for placemarks
+        NSMutableArray *placemarks = [NSMutableArray new];
+
+        // for loop adding placemarks to array
+        for (MKMapItem *item in response.mapItems) {
+            [placemarks addObject:item.placemark];
+        }
+
+        // set the DataSource's placemarks array to the array we just created
+        [DataSource sharedInstance].placemarks = placemarks;
+
+        // post notification 1
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"Placemarks Updated" object:nil];
+    }];
+}
+
+#pragma mark - MKMapViewDelegate
+
+//- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation {
+//    MKPinAnnotationView *pin = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"annotation"];
+//    pin.pinColor = MKPinAnnotationColorPurple;
+//
+//    UIButton *button = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+//    [button addTarget:self action:@selector(didTapDetailOnPin) forControlEvents:UIControlEventTouchUpInside];
+//
+//    pin.rightCalloutAccessoryView = button;
+//    pin.draggable = NO;
+//    pin.animatesDrop = YES;
+//    pin.canShowCallout = YES;
+//    pin.highlighted = NO;
+//
+//    return pin;
+//}
+
+#pragma mark - CLLocationManagerDelegate
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
+    CLLocationCoordinate2D center = CLLocationCoordinate2DMake(manager.location.coordinate.latitude, manager.location.coordinate.longitude);
+    MKCoordinateSpan span = MKCoordinateSpanMake(0.001, 0.001);
+    MKCoordinateRegion region = MKCoordinateRegionMake(center, span);
+    [_map setRegion:region animated:YES];
+    [_locationManager stopUpdatingLocation];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
+    NSLog(@"Error: %@", error.localizedDescription);
+}
+
+#pragma mark - Miscellaneous
+
+- (void)showLocationOnMap {
+    [_map removeAnnotations:[_map annotations]];
+    [DataSource sharedInstance].placemarks = [@[[DataSource sharedInstance].tappedPlacemarkOnCell] mutableCopy];
+    [_map showAnnotations:[DataSource sharedInstance].placemarks animated:YES];
 }
 
 /*

@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>F3D58B25-B7B9-40F3-B864-55E0D1DCFB5C</string>
 	<key>IDESourceControlProjectName</key>
-	<string>project</string>
+	<string>BlocSpot</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>78939C0954AB55DB56C8AE04F3AAFDC2857431D0</key>
 		<string>https://github.com/andrewcar/BlocSpot.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>BlocSpot.xcodeproj/project.xcworkspace</string>
+	<string>BlocSpot.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>78939C0954AB55DB56C8AE04F3AAFDC2857431D0</key>
