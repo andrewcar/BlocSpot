@@ -9,6 +9,7 @@
 #import "MapViewController.h"
 #import "SearchTableViewController.h"
 #import "DataSource.h"
+#import "POI.h"
 
 @interface MapViewController ()
 
@@ -179,21 +180,22 @@
 
 #pragma mark - MKMapViewDelegate
 
-//- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation {
-//    MKPinAnnotationView *pin = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"annotation"];
-//    pin.pinColor = MKPinAnnotationColorPurple;
-//
-//    UIButton *button = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
-//    [button addTarget:self action:@selector(didTapDetailOnPin) forControlEvents:UIControlEventTouchUpInside];
-//
-//    pin.rightCalloutAccessoryView = button;
-//    pin.draggable = NO;
-//    pin.animatesDrop = YES;
-//    pin.canShowCallout = YES;
-//    pin.highlighted = NO;
-//
-//    return pin;
-//}
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation {
+    if (annotation == mapView.userLocation) {
+        return nil;
+    }
+    // view
+    MKPinAnnotationView *view = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"pin"];
+    // pin color
+    view.pinColor = MKPinAnnotationColorPurple;
+    // enabled animated
+    view.enabled = YES;
+    view.animatesDrop = YES;
+    view.canShowCallout = YES;
+    // detail button
+    view.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+    return view;
+}
 
 #pragma mark - CLLocationManagerDelegate
 
